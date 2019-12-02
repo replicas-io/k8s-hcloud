@@ -1,0 +1,34 @@
+sshPort: {{ cluster.sshPort }}
+deployments:
+{% for i in range(0, servers.master.replicas, 1) %}
+  - name: "master{{ i }}.nodes.{{ cluster.domain }}"
+    state: present # (present|started|stopped|restarted|absent|rebuild)
+    size: {{ servers.master.size }}
+    location: "{{ cluster.location }}"
+    image: "{{ servers.master.image }}"
+    backup: "{{ servers.master.backup }}"
+    sshKeys:
+      - "{{ cluster.hcloudSSHKey }}"
+    labels: "{{ cluster.labels }}"
+{% endfor %}
+{% for i in range(0, servers.worker.replicas, 1) %}
+  - name: "worker{{ i }}.nodes.{{ cluster.domain }}"
+    state: present # (present|started|stopped|restarted|absent|rebuild)
+    size: {{ servers.worker.size }}
+    location: "{{ cluster.location }}"
+    image: "{{ servers.worker.image }}"
+    backup: "{{ servers.master.backup }}"
+    sshKeys:
+      - "{{ cluster.hcloudSSHKey }}"
+    labels: "{{ cluster.labels }}"
+{% endfor %}
+
+networks:
+  - name: "{{ cluster.network }}"
+    servers:
+{% for i in range(0, servers.master.replicas, 1) %}
+      - "master{{ i }}.nodes.{{ cluster.domain }}"
+{% endfor %}
+{% for i in range(0, servers.worker.replicas, 1) %}
+      - "worker{{ i }}.nodes.{{ cluster.domain }}"
+{% endfor %}

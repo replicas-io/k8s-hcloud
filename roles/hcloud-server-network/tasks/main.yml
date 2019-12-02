@@ -1,0 +1,6 @@
+---
+- name: "Attch servers to the network"
+  include_tasks: networks_loop.yml
+  loop: "{{ networks }}"
+  loop_control:
+    loop_var: network

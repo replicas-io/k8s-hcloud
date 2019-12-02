@@ -1,0 +1,19 @@
+---
+- name: Install pip packages
+  pip:
+    name: netaddr
+    state: latest
+    extra_args: --user
+
+- name: Create the local working directory
+  file:
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}"
+    state: directory
+
+- name: Gather remote roles
+  command: "ansible-galaxy install --force --roles-path {{ playbook_dir }}/roles/ -r roles/requirements.yml"
+
+- name: Copy the kubespray inventory file to the working directory
+  copy:
+    src: "kubespray/{{ inventory_file }}"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"

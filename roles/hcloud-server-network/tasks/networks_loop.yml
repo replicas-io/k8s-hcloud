@@ -1,0 +1,51 @@
+---
+- name: Get the virtual network ID
+  uri:
+    url: "{{ hcloudAPI }}networks"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ hcloudToken }}"
+    method: GET
+    status_code: 200
+    body_format: json
+    body:
+      name: "{{ network.name }}"
+  register: networkGet
+  failed_when: networkGet.json.networks | length < 1
+  changed_when: false
+
+- name: Get the server IDs
+  uri:
+    url: "{{ hcloudAPI }}servers?name={{ item }}"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ hcloudToken }}"
+    method: GET
+    status_code: 200
+  register: serverGet
+  loop: "{{ network.servers }}"
+  changed_when: false
+
+- name: Fail when the server was not found
+  fail:
+    msg: "The server {{ server.item }} was not found!"
+  when: server.json.servers | length < 1
+  loop: "{{ serverGet.results }}"
+  loop_control:
+    loop_var: server
+  changed_when: false
+
+- name: Attach the server to the network
+  uri:
+    url: "{{ hcloudAPI }}servers/{{ item.json.servers[0].id }}/actions/attach_to_network"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ hcloudToken }}"
+    method: POST
+    status_code:
+      - 201
+      - 422
+    body_format: json
+    body:
+      network: "{{ networkGet.json.networks[0].id }}"
+  loop: "{{ serverGet.results }}"

@@ -1,0 +1,7 @@
+---
+hcloudToken: "{{ vaultHcloudToken }}"
+# the following vars are specified in vars/bastion.yml
+# networks:
+#   - name: "{{ cluster.network }}"
+#     servers:
+#       - "bastion.infra.{{ cluster.domain }}"

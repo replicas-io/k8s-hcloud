@@ -1,0 +1,118 @@
+---
+- name: Render the deployments template
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  become: false
+  vars_files:
+    - vars/inventory.yml
+  tasks:
+    - template:
+        src: "{{ playbook_dir }}/templates/deployments.yml.j2"
+        dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+
+- name: Create nodes
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  become: false
+  vars_files:
+    - vars/inventory.yml
+    - vars/vault_hcloud_token.yml
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+  pre_tasks:
+    - name: Get the SSH public key
+      shell: "cat {{ cluster.sshKeyFile }}.pub"
+      register: sshPubKey
+      changed_when: false
+
+    - name: Prepare variables
+      set_fact:
+        hcloudBearer: "{{ vaultHcloudToken }}"
+        sshKey:
+          name: "{{ cluster.hcloudSSHKey }}"
+          value: "{{ sshPubKey.stdout }}"
+          state: present
+      changed_when: false
+  roles:
+    - siw36.ansible_hcloud_vm
+
+- name: Add nodes host to hcloud vnet
+  hosts: localhost
+  gather_facts: false
+  become: false
+  connection: local
+  vars_files:
+    - vars/inventory.yml
+    - vars/vault_hcloud_token.yml
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+  vars:
+    hcloudToken: "{{ vaultHcloudToken }}"
+  roles:
+    - hcloud-server-network
+
+- name: Wait for provisioning
+  hosts: new_servers
+  gather_facts: false
+  tasks:
+    - name: Wait for vm to become ready
+      wait_for_connection:
+        delay: 3
+        timeout: 300
+
+- name: Create a DNS record for new nodes
+  hosts: new_servers
+  become: false
+  gather_facts: true
+  vars_files:
+    - vars/vault_cloudflare_token.yml
+    - vars/inventory.yml
+  tasks:
+    - name: Create A record
+      cloudflare_dns:
+        zone: "{{ cluster.domain }}"
+        record: "{{ inventory_hostname }}"
+        type: A
+        value: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+        ttl: 120
+        priority: 10
+        account_email: "{{ vaultCloudflareEmail }}"
+        account_api_token: "{{ vaultCloudflareToken }}"
+
+- name: Configure SSH hardening
+  hosts: new_servers
+  gather_facts: true
+  become: true
+  vars_files:
+    - vars/inventory.yml
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+  roles:
+    - siw36.ansible_ssh_hardening
+
+- name: Prepare local inventory
+  hosts: new_servers
+  gather_facts: true
+  vars_files:
+    - vars/inventory.yml
+  tasks:
+    - name: Add the master host to the inventory
+      lineinfile:
+        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+        insertafter: '^\[all\]$'
+        line: "{{ hostvars[inventory_hostname].split('.')[1] }} ansible_host={{ hostvars[inventory_hostname] }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }} etcd_member_name={{ hostvars[inventory_hostname].split('.')[1] }}"
+      delegate_to: localhost
+      when: inventory_hostname | search("master")
+
+
+    - name: Add the worker host to the inventory
+      lineinfile:
+        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+        insertafter: '^\[all\]$'
+        line: "{{ hostvars[inventory_hostname].split('.')[1] }} ansible_host={{ hostvars[inventory_hostname] }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }}"
+      delegate_to: localhost
+      when: inventory_hostname | search("worker")
+
+    - name: Render the template
+      template:
+        src: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+        dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"

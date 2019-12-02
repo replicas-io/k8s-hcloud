@@ -1,0 +1,47 @@
+---
+- name: "Create virtual network"
+  uri:
+    url: "{{ hcloudAPI }}networks"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ hcloudToken }}"
+    method: POST
+    status_code: 201, 409
+    body_format: json
+    body:
+      name: "{{ network.name }}"
+      ip_range: "{{ network.range }}"
+      labels:
+        stage: "{{ network.stage }}"
+
+- name: Get the virtual network ID
+  uri:
+    url: "{{ hcloudAPI }}networks"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ hcloudToken }}"
+    method: GET
+    status_code: 200
+    body_format: json
+    body:
+      name: "{{ network.name }}"
+      label_selector: "{{ network.stage }}"
+  register: networkGet
+
+# This task will ignore overlapping subnet errors because the API is dumb and does not respond with "already existing"
+- name: "Add subnet to the virtual network"
+  uri:
+    url: "{{ hcloudAPI }}networks/{{ networkGet.json.networks[0].id }}/actions/add_subnet"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ hcloudToken }}"
+    method: POST
+    status_code: 201, 422
+    body_format: json
+    body:
+      type: "{{ subnet.type }}"
+      ip_range: "{{ subnet.range }}"
+      network_zone: "{{ subnet.zone }}"
+  loop: "{{ network.subnets }}"
+  loop_control:
+    loop_var: subnet
