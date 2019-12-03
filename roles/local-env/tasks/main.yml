@@ -16,4 +16,9 @@
 - name: Copy the kubespray inventory file to the working directory
   copy:
     src: "kubespray/{{ inventory_file }}"
-    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
+
+- name: Render the deployments template
+  template:
+    src: "{{ playbook_dir }}/templates/deployments.yml.j2"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"

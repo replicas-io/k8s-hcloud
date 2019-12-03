@@ -1,16 +1,4 @@
 ---
-- name: Render the deployments template
-  hosts: localhost
-  gather_facts: false
-  connection: local
-  become: false
-  vars_files:
-    - vars/inventory.yml
-  tasks:
-    - template:
-        src: "{{ playbook_dir }}/templates/deployments.yml.j2"
-        dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
-
 - name: Create nodes
   hosts: localhost
   gather_facts: false
@@ -97,22 +85,28 @@
   tasks:
     - name: Add the master host to the inventory
       lineinfile:
-        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
         insertafter: '^\[all\]$'
-        line: "{{ hostvars[inventory_hostname].split('.')[1] }} ansible_host={{ hostvars[inventory_hostname] }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }} etcd_member_name={{ hostvars[inventory_hostname].split('.')[1] }}"
+        line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }} etcd_member_name={{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }}"
       delegate_to: localhost
       when: inventory_hostname | search("master")
 
-
     - name: Add the worker host to the inventory
       lineinfile:
-        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
         insertafter: '^\[all\]$'
-        line: "{{ hostvars[inventory_hostname].split('.')[1] }} ansible_host={{ hostvars[inventory_hostname] }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }}"
+        line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }}"
       delegate_to: localhost
       when: inventory_hostname | search("worker")
 
     - name: Render the template
       template:
-        src: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+        src: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
         dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+      delegate_to: localhost
+
+    - name: Delete the copied template file
+      file:
+        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
+        state: absent
+      delegate_to: localhost
