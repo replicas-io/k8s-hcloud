@@ -29,6 +29,15 @@
     src: "{{ playbook_dir }}/templates/deployments.yml.j2"
     dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
 
+- name: Create a ansible config file
+  blockinfile:
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/ansible.cfg"
+    block: |
+      [defaults]
+      host_key_checking = False
+      private_key_file = {{ cluster.sshKeyFile }}
+    create: true
+
 - name: Copy the start script to the working directory
   copy:
     src: "{{ playbook_dir }}/kubespray.sh"
