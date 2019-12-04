@@ -31,7 +31,7 @@ networks:
 
 servers:
   master:
-    replicas: 1
+    replicas: 3
     size: cx41
     backup: 'false'
     image: centos-7

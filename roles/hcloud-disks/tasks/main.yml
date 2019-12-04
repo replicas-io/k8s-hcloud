@@ -4,7 +4,7 @@
     api_token: "{{ hcloudToken }}"
     name: "{{ item[0] }}.{{ cluster.domain }}-vol{{ item[1] }}"
     server: "{{ item[0] }}.{{ cluster.domain }}"
-    automount: yes
+    automount: true
     format: xfs
     size: "{{ storageDiskSizeGB }}"
     state: present
