@@ -77,36 +77,41 @@
   roles:
     - siw36.ansible_ssh_hardening
 
-- name: Prepare local inventory
+- name: Prepare local inventory - add host details
   hosts: new_servers
   gather_facts: true
+  serial: true
   vars_files:
     - vars/inventory.yml
   tasks:
     - name: Add the master host to the inventory
       lineinfile:
         path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
-        insertafter: '^\[all\]$'
+        insertafter: '^\[all\]'
         line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }} etcd_member_name={{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }}"
       delegate_to: localhost
-      when: inventory_hostname | search("master")
+      when: inventory_hostname is search("master")
 
     - name: Add the worker host to the inventory
       lineinfile:
         path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
-        insertafter: '^\[all\]$'
+        insertafter: '^\[all\]'
         line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }}"
       delegate_to: localhost
-      when: inventory_hostname | search("worker")
+      when: inventory_hostname is search("worker")
 
+- name: Prepare local inventory - add hosts to groups
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars/inventory.yml
+  tasks:
     - name: Render the template
       template:
         src: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
         dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
-      delegate_to: localhost
 
     - name: Delete the copied template file
       file:
         path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
         state: absent
-      delegate_to: localhost
