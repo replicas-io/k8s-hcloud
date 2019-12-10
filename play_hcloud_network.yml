@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  become: false
+  vars_files:
+    - vars/inventory.yml
+    - vars/vault_hcloud_token.yml
+  roles:
+    - hcloud-network

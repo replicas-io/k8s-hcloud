@@ -1,0 +1,3 @@
+no bastion
+just deploy the nodes and configure them to route cluster communication over the vnet
+make it easy and clean, no one-shot fuckaround

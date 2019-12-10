@@ -1,0 +1,15 @@
+# ---
+# hcloudToken: "{{ vaultHcloudToken }}"
+# networks:
+#   - name: openshift
+#     range: 10.18.0.0/16
+#     stage: prod
+#     subnets:
+#       - name: nodes
+#         range: 10.18.1.0/24
+#         zone: eu-central
+#         type: server
+#       - name: other
+#         range: 10.18.2.0/24
+#         zone: eu-central
+#         type: server

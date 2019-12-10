@@ -1,0 +1,42 @@
+hcloudToken: "{{ vaultHcloudToken }}"
+cluster:
+  domain: replicas.io
+  location: hel1
+  network: openshift
+  hcloudProject: replicas.io
+  hcloudSSHKey: k8s-setup-replicas
+  sshKeyFile: ~/.ssh/k8s-setup-replicas
+  sshPort: 22
+  glusterSize:
+    app: 200
+    registry: 100
+  labels:
+    project: replicas.io
+    stage: prod
+    location: helsinki
+
+networks:
+  - name: openshift
+    range: 10.18.0.0/16
+    stage: prod
+    subnets:
+      - name: nodes
+        range: 10.18.1.0/24
+        zone: eu-central
+        type: server
+      - name: other
+        range: 10.18.2.0/24
+        zone: eu-central
+        type: server
+
+servers:
+  master:
+    replicas: 3
+    size: cx41
+    backup: 'false'
+    image: centos-7
+  worker:
+    replicas: 0
+    size: cx41
+    backup: 'false'
+    image: centos-7

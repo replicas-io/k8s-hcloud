@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  become: false
+  vars:
+    inventory_file: inventory.ini.j2
+  vars_files:
+    - vars/inventory.yml
+  roles:
+    - local-env

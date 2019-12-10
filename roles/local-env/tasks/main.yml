@@ -1,0 +1,44 @@
+---
+- name: Install pip packages
+  pip:
+    name: netaddr
+    state: latest
+    extra_args: --user
+
+- name: Create the local working directory
+  file:
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}"
+    state: directory
+
+# - name: Gather remote roles
+#   command: "ansible-galaxy install --force --roles-path {{ playbook_dir }}/roles/ -r roles/requirements.yml"
+
+- name: Copy the kubespray configuration files to the working directory
+  copy:
+    src: "{{ playbook_dir }}/kubespray-configs/"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}"
+  delegate_to: localhost
+
+- name: Copy the kubespray inventory file to the working directory
+  copy:
+    src: "templates/{{ inventory_file }}"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
+
+- name: Render the deployments template
+  template:
+    src: "{{ playbook_dir }}/templates/deployments.yml.j2"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+
+- name: Create a ansible config file
+  blockinfile:
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/ansible.cfg"
+    block: |
+      [defaults]
+      host_key_checking = False
+      private_key_file = {{ cluster.sshKeyFile }}
+    create: true
+
+- name: Copy the start script to the working directory
+  copy:
+    src: "{{ playbook_dir }}/kubespray.sh"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/kubespray.sh"

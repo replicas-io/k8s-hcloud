@@ -1,0 +1,6 @@
+---
+- name: "Create network and contained subnets"
+  include_tasks: networks_loop.yml
+  loop: "{{ networks }}"
+  loop_control:
+    loop_var: network

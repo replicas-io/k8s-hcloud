@@ -1,0 +1,5 @@
+# SSH hardening
+- src: siw36.ansible_ssh_hardening
+
+# Hcloud server
+- src: siw36.ansible_hcloud_vm
