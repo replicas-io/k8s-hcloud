@@ -4,8 +4,8 @@ cluster:
   location: hel1
   network: openshift
   hcloudProject: replicas.io
-  hcloudSSHKey: okd-setup
-  sshKeyFile: ~/.ssh/okd-setup
+  hcloudSSHKey: k8s-setup-replicas
+  sshKeyFile: ~/.ssh/k8s-setup-replicas
   sshPort: 22
   glusterSize:
     app: 200
