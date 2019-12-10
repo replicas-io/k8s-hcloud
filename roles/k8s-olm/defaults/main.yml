@@ -1,0 +1,4 @@
+---
+olmVersion: 0.13.0
+olmDownloadLink: "https://github.com/operator-framework/operator-lifecycle-manager/releases/download/{{ olmVersion }}"
+olmNamespace: olm

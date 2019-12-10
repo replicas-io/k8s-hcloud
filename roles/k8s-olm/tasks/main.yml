@@ -1,0 +1,13 @@
+---
+- name: Apply CRDs
+  shell: "kubectl apply -f {{ olmDownloadLink }}/crds.yaml"
+
+- name: Apply OLM
+  shell: "kubectl apply -f {{ olmDownloadLink }}/olm.yaml"
+
+- name: Wait for deployments to succeed
+  shell: "kubectl get csv -n {{ olmNamespace }} packageserver -o jsonpath='{.status.phase}'"
+  register: rolloutPhase
+  until: "{{ rolloutPhase.stdout }} == 'Succeeded'"
+  retries: 50
+  delay: 1
