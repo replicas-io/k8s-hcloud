@@ -1,0 +1,53 @@
+---
+- name: Create the firewall zone for all nodes
+  firewalld:
+    zone: "{{ zone }}"
+    interface: "{{ lanInterface }}"
+    permanent: yes
+    state: enabled
+
+- name: Realod firewalld
+  shell: firewall-cmd --reload
+
+- name: Configure firewall rules for master nodes
+  firewalld:
+    zone: "{{ zone }}"
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop: "{{ masterPorts }}"
+  when: hostvars['inventory_hostname'] is search('master')
+
+- name: Configure firewall rules for worker nodes
+  firewalld:
+    zone: "{{ zone }}"
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop: "{{ workerPorts }}"
+  when: hostvars['inventory_hostname'] is search('worker')
+
+- name: Realod firewalld
+  shell: firewall-cmd --reload
+
+- name: Load bridge netfilter kernel module
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Enable bridge netfilter kernel setting
+  become: yes
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Set ip forwarding on in /proc and in the sysctl file and reload if necessary
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
