@@ -14,3 +14,8 @@
     account_api_token: "{{ vaultCloudflareToken }}"
     state: absent
   loop: "{{ groups['all'] }}"
+
+- name: Delete local cluster directory
+  file:
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}"
+    state: absent
