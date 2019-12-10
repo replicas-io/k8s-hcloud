@@ -1,0 +1,13 @@
+---
+- name: Create nodes
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  become: false
+  vars_files:
+    - vars/inventory.yml
+    - vars/vault_hcloud_token.yml
+    - vars/vault_cloudflare_token.yml
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+  roles:
+    - hcloud-delete-cluster
