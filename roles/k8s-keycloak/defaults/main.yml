@@ -1,0 +1,7 @@
+---
+namespace: keycloak
+operatorName: keycloak-operator
+operatorChannel: alpha
+keycloakClusterName: keycloak-cluster
+keycloakClusterReplicas: 3
+keycloakStorageClass: rook-ceph

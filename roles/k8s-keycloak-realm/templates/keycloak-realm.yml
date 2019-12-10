@@ -1,0 +1,14 @@
+---
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakRealm
+metadata:
+  name: "{{ keycloakRealmName }}"
+spec:
+  realm:
+    id: "{{ keycloakRealmName }}"
+    realm: "{{ keycloakRealmName }}"
+    enabled: true
+    displayName: "{{ keycloakRealmName }} realm"
+  instanceSelector:
+    matchLabels:
+      keycloak-cluster: "{{ keycloakClusterName }}"

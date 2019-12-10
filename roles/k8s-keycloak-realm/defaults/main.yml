@@ -1,0 +1,4 @@
+---
+namespace: keycloak
+keycloakClusterName: keycloak-cluster
+keycloakRealmName: k8s

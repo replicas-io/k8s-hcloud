@@ -1,0 +1,3 @@
+---
+- name: Create the keycloak operator
+  shell: "echo {{ lookup('template', 'templates/keycloak-operator.yml') }} | kubectl apply -f -"

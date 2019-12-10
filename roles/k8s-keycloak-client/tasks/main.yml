@@ -1,0 +1,4 @@
+---
+- name: Create a keycloak client
+  shell: "echo {{ lookup('template', 'templates/keycloak-operator.yml') }} | kubectl apply -f -"
+  loop: "{{ keycloakClients }}"

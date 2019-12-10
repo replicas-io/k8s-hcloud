@@ -1,0 +1,18 @@
+---
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakUser
+metadata:
+  name: "{{ keycloakClusterName }}-user-{{ item.username }}"
+  labels:
+    keycloak-cluster: "{{ keycloakClusterName }}"
+spec:
+  user:
+    username: "{{ item.username }}"
+    firstName: "{{ item.firstName }}"
+    lastName: "{{ item.lastName }}"
+    email: "{{ item.email }}"
+    enabled: true
+    emailVerified: true
+  realmSelector:
+    matchLabels:
+      keycloak-cluster: "{{ keycloakClusterName }}"
