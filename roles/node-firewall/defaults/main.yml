@@ -1,5 +1,5 @@
 ---
-zone: k8s
+zone: kube
 lanInterface: eth1
 masterPorts:
   - 6443/tcp

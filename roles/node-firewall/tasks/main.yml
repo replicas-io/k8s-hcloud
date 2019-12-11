@@ -1,9 +1,15 @@
 ---
-- name: Create the firewall zone for all nodes
+- name: Create the firewall zone for k8s
+  firewalld:
+    zone: "{{ zone }}"
+    permanent: true
+    state: present
+
+- name: Add the LAN interface to the k8s zone
   firewalld:
     zone: "{{ zone }}"
     interface: "{{ lanInterface }}"
-    permanent: yes
+    permanent: true
     state: enabled
 
 - name: Realod firewalld
@@ -13,19 +19,19 @@
   firewalld:
     zone: "{{ zone }}"
     port: "{{ item }}"
-    permanent: yes
+    permanent: true
     state: enabled
   loop: "{{ masterPorts }}"
-  when: hostvars['inventory_hostname'] is search('master')
+  when: inventory_hostname is search('master')
 
 - name: Configure firewall rules for worker nodes
   firewalld:
     zone: "{{ zone }}"
     port: "{{ item }}"
-    permanent: yes
+    permanent: true
     state: enabled
   loop: "{{ workerPorts }}"
-  when: hostvars['inventory_hostname'] is search('worker')
+  when: inventory_hostname is search('worker')
 
 - name: Realod firewalld
   shell: firewall-cmd --reload
