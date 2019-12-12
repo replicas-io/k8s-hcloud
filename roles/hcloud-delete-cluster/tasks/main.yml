@@ -23,6 +23,12 @@
     state: absent
   loop: "{{ groups['all'] }}"
 
+- name: Delete the network
+  hcloud_network:
+    api_token: "{{ hcloudToken }}"
+    name: "{{ cluster.network }}"
+    state: absent
+
 - name: Delete local cluster directory
   file:
     path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}"
