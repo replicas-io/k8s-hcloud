@@ -7,9 +7,6 @@ cluster:
   hcloudSSHKey: k8s-setup-replicas
   sshKeyFile: ~/.ssh/k8s-setup-replicas
   sshPort: 22
-  glusterSize:
-    app: 200
-    registry: 100
   labels:
     project: replicas.io
     stage: prod
