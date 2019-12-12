@@ -5,6 +5,14 @@
     state: absent
   loop: "{{ groups['all'] }}"
 
+- name: Delete volumes
+  hcloud_volume:
+    api_token: "{{ hcloudToken }}"
+    name: "{{ item[0] }}.nodes.{{ cluster.domain }}-vol{{ item[1] }}"
+    state: absent
+  loop: "{{ storageNodes | product(query('sequence', 'start=0 end='+(storageDisks -1 )|string)) | list }}"
+  when: storageDisks > 0
+
 - name: Delete A record
   cloudflare_dns:
     zone: "{{ cluster.domain }}"

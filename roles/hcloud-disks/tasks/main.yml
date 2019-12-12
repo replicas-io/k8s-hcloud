@@ -2,10 +2,15 @@
 - name: Create and attach volumes to storage nodes
   hcloud_volume:
     api_token: "{{ hcloudToken }}"
-    name: "{{ item[0] }}.{{ cluster.domain }}-vol{{ item[1] }}"
-    server: "{{ item[0] }}.{{ cluster.domain }}"
-    automount: true
+    name: "{{ item[0] }}.nodes.{{ cluster.domain }}-vol{{ item[1] }}"
+    server: "{{ item[0] }}.nodes.{{ cluster.domain }}"
+    automount: yes
     format: xfs
     size: "{{ storageDiskSizeGB }}"
     state: present
   loop: "{{ storageNodes | product(query('sequence', 'start=0 end='+(storageDisks -1 )|string)) | list }}"
+  retries: 50
+  delay: 3
+  register: result
+  until: result.rc == 0
+  when: storageDisks > 0
