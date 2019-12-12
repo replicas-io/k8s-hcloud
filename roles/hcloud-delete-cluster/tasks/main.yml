@@ -10,8 +10,12 @@
     api_token: "{{ hcloudToken }}"
     name: "{{ item[0] }}.nodes.{{ cluster.domain }}-vol{{ item[1] }}"
     state: absent
-  loop: "{{ storageNodes | product(query('sequence', 'start=0 end='+(storageDisks -1 )|string)) | list }}"
-  when: storageDisks > 0
+  loop: "{{ storageNodes | product(query('sequence', 'start=0 end='+storageDisks|string)) | list }}"
+  retries: 50
+  delay: 3
+  register: result
+  until: result.rc == 0
+  when: storageDisks | int > 0
 
 - name: Delete A record
   cloudflare_dns:
