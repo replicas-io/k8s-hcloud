@@ -1,9 +1,0 @@
----
-# Variables for deploying extra disks to nodes
-storageNodes:
-  - master0
-  - master1
-  - master2
-
-storageDisks: 1 # per node
-storageDiskSizeGB: 50

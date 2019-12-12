@@ -2,7 +2,7 @@ hcloudToken: "{{ vaultHcloudToken }}"
 cluster:
   domain: replicas.io
   location: hel1
-  network: openshift
+  network: k8s
   hcloudProject: replicas.io
   hcloudSSHKey: k8s-setup-replicas
   sshKeyFile: ~/.ssh/k8s-setup-replicas
@@ -16,7 +16,7 @@ cluster:
     location: helsinki
 
 networks:
-  - name: openshift
+  - name: k8s
     range: 10.18.0.0/16
     stage: prod
     subnets:
@@ -40,3 +40,13 @@ servers:
     size: cx41
     backup: 'false'
     image: centos-7
+
+
+# Variables for deploying extra disks to nodes
+storageNodes:
+  - master0
+  - master1
+  - master2
+
+storageDisks: 1 # per node
+storageDiskSizeGB: 50 # per disk

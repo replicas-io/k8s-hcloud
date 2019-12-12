@@ -1,0 +1,11 @@
+- name: Prepare local environment
+  import_playbook: play_local_env.yml
+
+- name: Deploy network setup
+  import_playbook: play_network.yml
+
+- name: Deploy nodes
+  import_playbook: play_nodes.yml
+
+- name: Add disks to nodes
+  import_playbook: play_disks.yml
