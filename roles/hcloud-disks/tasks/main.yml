@@ -8,5 +8,5 @@
     format: xfs
     size: "{{ storageDiskSizeGB }}"
     state: present
-  loop: "{{ storageNodes | product(query('sequence', 'start=0 end='+storageDisks|string)) | list }}"
+  loop: "{{ storageNodes | product(query('sequence', 'start=1 end='+storageDisks|string)) | list }}"
   when: storageDisks | int > 0

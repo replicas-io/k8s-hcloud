@@ -45,3 +45,4 @@
   copy:
     src: "{{ playbook_dir }}/kubespray.sh"
     dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/kubespray.sh"
+    mode: 0770
