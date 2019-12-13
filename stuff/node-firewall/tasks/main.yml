@@ -33,6 +33,9 @@
   loop: "{{ workerPorts }}"
   when: inventory_hostname is search('worker')
 
+- name: Allow masquerade
+  shell: "firewall-cmd --add-masquerade --permanent"
+
 - name: Realod firewalld
   shell: firewall-cmd --reload
 

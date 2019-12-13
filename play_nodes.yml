@@ -67,7 +67,7 @@
         account_email: "{{ vaultCloudflareEmail }}"
         account_api_token: "{{ vaultCloudflareToken }}"
 
-- name: Configure SSH hardening and firewall rules
+- name: Configure SSH hardening
   hosts: new_servers
   gather_facts: true
   become: true
@@ -76,7 +76,23 @@
     - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
   roles:
     - siw36.ansible_ssh_hardening
-    - node-firewall
+
+- name: Disable firewall and SELinux
+  hosts: new_servers
+  gather_facts: true
+  become: true
+  vars_files:
+    - vars/inventory.yml
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+  tasks:
+    - name: Disable firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: false
+    - name: Disable SELinux
+      selinux:
+        state: disabled
 
 - name: Prepare local inventory - add host details
   hosts: new_servers
