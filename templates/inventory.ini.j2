@@ -24,3 +24,8 @@ worker{{ i }}
 kube-master
 kube-node
 calico-rr
+
+[ceph]
+{% for i in storageNodes %}
+{{ i }}
+{% endfor %}
