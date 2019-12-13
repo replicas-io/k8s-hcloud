@@ -3,7 +3,7 @@
   shell: "echo {{ lookup('template', 'templates/rook-ceph-operator.yml') }} | kubectl apply -f -"
 
 - name: Wait for operator to come up
-  shell: "something
+  shell: "something"
 
 - name: Create the ceph clutser
   shell: "echo {{ lookup('template', 'templates/ceph-cluster.yml') }} | kubectl apply -f -"

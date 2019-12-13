@@ -6,3 +6,4 @@
     - vars/inventory.yml
   roles:
     - k8s-fetch-kubeconfig
+    - local-kubectl
