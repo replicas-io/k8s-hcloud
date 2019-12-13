@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: false
+  vars_files:
+    - vars/inventory.yml
+  roles:
+    - local-kubectl
+    - k8s-olm
+    - k8s-rook-ceph

@@ -1,0 +1,6 @@
+---
+- name: Fetch the kubeadmin kubeconfig from one of the master nodes
+  fetch:
+    src: "{{ configPath }}"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/.kube/config"
+  run_once: true

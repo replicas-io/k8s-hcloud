@@ -1,0 +1,9 @@
+---
+- hosts: master0
+  become: true
+  gather_facts: true
+  vars_files:
+    - vars/inventory.yml
+  roles:
+    - k8s-fetch-kubeconfig
+    - local-kubectl

@@ -1,0 +1,46 @@
+---
+apiVersion: ceph.rook.io/v1
+kind: CephCluster
+metadata:
+  name: "{{ cephClusterName }}"
+  namespace: "{{ namespace }}"
+spec:
+  cephVersion:
+    image: "{{ cephClusterImage }}"
+  dataDirHostPath: /var/lib/rook
+  mon:
+    count: 3
+    allowMultiplePerNode: false
+  dashboard:
+    enabled: true
+    ssl: true
+  network:
+    hostNetwork: false
+  rbdMirroring:
+    workers: 0
+  storage:
+    useAllNodes: false
+    useAllDevices: true
+    nodes:
+{% for node in storageNodes %}
+      - name: "{{ node }}"
+{% endfor %}
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+{% for node in storageNodes %}
+            - "{{ node }}"
+{% endfor %}
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: "rook.io/cluster"
+            operator: In
+            values:
+            - "*"
+        topologyKey: "kubernetes.io/hostname"

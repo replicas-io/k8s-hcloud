@@ -1,0 +1,13 @@
+---
+- name: Create the rook ceph operator
+  shell: "echo {{ lookup('template', 'templates/rook-ceph-operator.yml') }} | {{ kubectl }} apply -f -"
+
+- name: Wait for operator to come up
+  shell: "{{ kubectl }} get pods -n {{ namespace }}"
+  register: output
+  retries: 50
+  delay: 2
+  until: output.stdout is search("Running")
+
+- name: Create the ceph clutser
+  shell: "echo {{ lookup('template', 'templates/ceph-cluster.yml') }} | {{ kubectl }} apply -f -"

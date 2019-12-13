@@ -1,0 +1,19 @@
+---
+- name: Check of the kubeconfig is available
+  stat:
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/.kube/config"
+    get_checksum: false
+    get_mime: false
+  register: kubeconfig
+
+- name: Fail when kubeconfig is not present
+  fail:
+    msg: "Kubeconfig could not be found at {{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/.kube/config"
+  when: kubeconfig.stat.exists != true
+
+- name: Prepare the kubectl command
+  set_fact:
+    kubectl: "kubectl --kubeconfig {{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/.kube/config"
+
+- name: Test if kubeconfig is working
+  shell: "{{ kubectl }} cluster-info"
