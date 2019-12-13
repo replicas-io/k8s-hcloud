@@ -1,0 +1,26 @@
+---
+wanInterface: eth0
+lanInterface: eth1
+masterLan:
+  - "{{ cluster.sshPort }}/tcp" # SSH
+  - 6443/tcp # API
+  - 2379-2380/tcp # ETCD
+  - 10250-10252/tcp # Kubelet
+  - 10255/tcp # Kubelet
+  - 8472/udp # DNS?
+  - 30000-32767/tcp # node port services
+masterWan:
+  - "{{ cluster.sshPort }}/tcp" # SSH
+  - 6443/tcp # API
+  - 30000-32767/tcp # node port services
+nodeLan:
+  - "{{ cluster.sshPort }}/tcp" # SSH
+  - 6443/tcp # API
+  - 10250/tcp # Kubelet
+  - 10255/tcp # Kubelet
+  - 8472/udp # DNS?
+  - 6783/tcp # ???
+nodeWan:
+  - "{{ cluster.sshPort }}/tcp" # SSH
+  - 6443/tcp # API
+  - 30000-32767/tcp # node port services
