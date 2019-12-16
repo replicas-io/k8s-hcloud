@@ -26,6 +26,8 @@ networks:
         zone: eu-central
         type: server
 
+metallbAddressCount: 2
+
 servers:
   master:
     replicas: 3
