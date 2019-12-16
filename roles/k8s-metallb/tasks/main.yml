@@ -7,8 +7,8 @@
 
 - name: Prepare IP list
   set_fact:
-    IPs: "{{ IPs | default([]) + [ hcloud_floating_ip_info.ip ] }}"
-  loop: addressOutput.results
+    IPs: "{{ IPs | default([]) + [ item.ip ] }}"
+  loop: "{{ addressOutput.hcloud_floating_ip_info }}"
 
 - name: Deploy metallb
   shell: "{{ kubectl }} apply -f {{ metallbManifest }}"
