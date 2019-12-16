@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  become: false
+  gather_facts: false
+  vars_files:
+    - vars/inventory.yml
+    - vars/vault_cloudflare_token.yml
+  roles:
+    - local-kubectl
+    - k8s-nginx-ingress
