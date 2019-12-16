@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  become: false
+  gather_facts: false
+  vars_files:
+    - vars/vault_hcloud_token.yml
+    - vars/inventory.yml
+  roles:
+    - hcloud-floating-ip
