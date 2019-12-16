@@ -14,4 +14,4 @@
   shell: "{{ kubectl }} apply -f {{ metallbManifest }}"
 
 - name: Render the config file and apply it
-  shell: "echo {{ lookup('template', 'templates/metallb-config.yml.yml') }} | {{ kubectl }} apply -f -
+  shell: "echo {{ lookup('template', 'templates/metallb-config.yml.j2') }} | {{ kubectl }} apply -f -
