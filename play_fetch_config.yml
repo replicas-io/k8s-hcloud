@@ -6,4 +6,11 @@
     - vars/inventory.yml
   roles:
     - k8s-fetch-kubeconfig
+
+- hosts: localhost
+  become: false
+  gather_facts: false
+  vars_files:
+    - vars/inventory.yml
+  roles:
     - local-kubectl

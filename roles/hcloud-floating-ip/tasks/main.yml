@@ -1,0 +1,14 @@
+---
+- name: Set the label for cluster assignment
+  set_fact:
+    label:
+      owner: "{{ cluster.domain }}-LB-IP"
+
+- name: Create the given amount of floating IP addresses
+  hcloud_floating_ip:
+    name: "{{ cluster.domain }}-LB-IP-{{ lookup('pipe', 'openssl rand -hex 3') }}"
+    server: "master{{ query('sequence', 'start=1 end='+servers.master.replicas|string) | random}}.nodes.{{ cluster.domain }}"
+    labels: "{{ label }}"
+    type: ipv4
+    state: present
+  loop: "{{ query('sequence', 'start=1 end='+metallbAddressCount|string) | list }}"
