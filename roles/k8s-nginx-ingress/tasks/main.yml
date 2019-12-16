@@ -1,0 +1,21 @@
+---
+- name: Deploy the nginx ingress controller and its dependencies
+  shell: "{{ kubectl }} apply -f {{ nginxIngressManifest }}"
+
+- name: Expose the nginx ingress controller with a pip from the LB
+  shell: "echo '{{ lookup('template', 'templates/nginx-ingress-service.yml.j2') }}' | {{ kubectl }} apply -f -"
+
+- name: Get the nginx ingress loadbalancer IP address
+  shell: "{{ kubectl }} -n ingress-nginx get svc ingress-nginx -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'"
+  register: nginxPIP
+
+- name: Create the default DNS entry for nginx ingress routes
+  cloudflare_dns:
+    zone: "{{ cluster.domain }}"
+    record: "*.apps.k8s.{{ cluster.domain }}"
+    type: A
+    value: "{{ nginxPIP.stdout }}"
+    ttl: 120
+    priority: 10
+    account_email: "{{ vaultCloudflareEmail }}"
+    account_api_token: "{{ vaultCloudflareToken }}"
