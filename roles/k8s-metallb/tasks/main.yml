@@ -2,7 +2,7 @@
 - name: Get all public IPs from hcloud that should be used for the cluster
   hcloud_floating_ip_info:
     api_token: "{{ hcloudToken }}"
-    label_selector: "owner={{ cluster.Domain }}-LB-IP"
+    label_selector: "owner={{ cluster.domain }}-LB-IP"
   register: addressOutput
 
 - name: Prepare IP list
@@ -14,4 +14,5 @@
   shell: "{{ kubectl }} apply -f {{ metallbManifest }}"
 
 - name: Render the config file and apply it
-  shell: "echo {{ lookup('template', 'templates/metallb-config.yml.j2') }} | {{ kubectl }} apply -f -
+  shell: "echo '{{ lookup('template', 'templates/metallb-config.yml.j2') }}' | {{ kubectl }} apply -f -"
+  when: IPs | length > 0

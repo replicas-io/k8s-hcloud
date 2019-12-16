@@ -10,5 +10,5 @@ data:
       protocol: layer2
       addresses:
 {% for i in IPs %}
-      - {{ i }}
+      - {{ i }}/32
 {% endfor %}
