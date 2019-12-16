@@ -2,7 +2,7 @@
 - name: Get all public IPs from hcloud that should be used for the cluster
   hcloud_floating_ip_info:
     api_token: "{{ hcloudToken }}"
-    label_selector: "{{ cluster.Domain }}-LB-IP"
+    label_selector: "owner={{ cluster.Domain }}-LB-IP"
   register: addressOutput
 
 - name: Prepare IP list
