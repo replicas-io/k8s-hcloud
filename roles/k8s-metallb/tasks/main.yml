@@ -1,0 +1,17 @@
+---
+- name: Get all public IPs from hcloud that should be used for the cluster
+  hcloud_floating_ip_info:
+    api_token: "{{ hcloudToken }}"
+    label_selector: "{{ cluster.Domain }}-LB-IP"
+  register: addressOutput
+
+- name: Prepare IP list
+  set_fact:
+    IPs: "{{ IPs | default([]) + [ hcloud_floating_ip_info.ip ] }}"
+  loop: addressOutput.results
+
+- name: Deploy metallb
+  shell: "{{ kubectl }} apply -f {{ metallbManifest }}"
+
+- name: Render the config file and apply it
+  shell: "echo {{ lookup('template', 'templates/metallb-config.yml.yml') }} | {{ kubectl }} apply -f -
