@@ -84,15 +84,8 @@
   vars_files:
     - vars/inventory.yml
     - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
-  tasks:
-    - name: Disable firewalld
-      systemd:
-        name: firewalld
-        state: stopped
-        enabled: false
-    - name: Disable SELinux
-      selinux:
-        state: disabled
+  roles:
+    - node-prepare
 
 - name: Prepare local inventory - add host details
   hosts: new_servers
