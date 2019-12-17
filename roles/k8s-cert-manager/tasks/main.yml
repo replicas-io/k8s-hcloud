@@ -1,0 +1,13 @@
+---
+- name: Create the cert-manager namespace
+  shell: "{{ kubectl }} create namespace cert-manager"
+  ignore_errors: true
+
+- name: Apply the cert-manager manifest
+  shell: "{{ kubectl }} apply -f {{ certManagerManifest }}"
+
+- name: Deploy the staging and production cluster issuers
+  shell: "echo '{{ lookup('template', item) }}' | {{ kubectl }} -n cert-manager apply -f -"
+  loop:
+    - templates/staging-cluster-issuer.yml.j2
+    - templates/prod-cluster-issuer.yml.j2

@@ -1,0 +1,3 @@
+---
+certManagerVersion: v0.12.0
+certManagerManifest: "https://github.com/jetstack/cert-manager/releases/download/{{ certManagerVersion }}/cert-manager.yaml"
