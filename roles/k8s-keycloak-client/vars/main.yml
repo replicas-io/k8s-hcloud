@@ -1,6 +1,3 @@
 ---
-keycloakUsers:
-  - username: xxx
-    firstName: xxx
-    lastName: xxx
-    email: xxx
+# keycloakClients:
+#   - xxx

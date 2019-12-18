@@ -1,0 +1,14 @@
+---
+namespace: keycloak
+keycloakClusterName: keycloak-cluster
+keycloakRealms:
+  - k8s
+
+keycloakClients:
+  - kubernetes
+
+keycloakUsers:
+  - username: admin
+    firstName: admin
+    lastName: admin
+    email: admin@replicas.io

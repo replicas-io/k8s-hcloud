@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: false
+  vars_files:
+    - vars/keycloak.yml
+  roles:
+    - local-env
+    - k8s-keycloak
+    - k8s-keycloak-realm
+    - k8s-keycloak-user
+    - k8s-keycloak-client

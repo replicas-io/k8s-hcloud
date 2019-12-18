@@ -2,7 +2,7 @@
 apiVersion: keycloak.org/v1alpha1
 kind: KeycloakClient
 metadata:
-  name: "{{ keycloakClusterName }}-user-{{ item.name }}"
+  name: "{{ keycloakClusterName }}-user-{{ item }}"
   labels:
     keycloak-cluster: "{{ keycloakClusterName }}"
 spec:
@@ -10,7 +10,7 @@ spec:
     matchLabels:
       keycloak-cluster: "{{ keycloakClusterName }}"
   client:
-    clientId: "{{ item.name }}"
+    clientId: "{{ item }}"
     secret: lookup('password', '/tmp/passwordfile length=64 chars=ascii_letters,digits,hexdigits,punctuation')
     clientAuthenticatorType: client-secret
     protocol: openid-connect
