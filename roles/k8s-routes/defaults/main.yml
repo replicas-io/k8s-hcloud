@@ -1,0 +1,21 @@
+---
+routes:
+  - route: "{{ cluster.domainDashboard }}.apps.{{ cluster.domain }}"
+    namespace: kube-system
+    name: kubernetes-dashboard
+    serviceName: kubernetes-dashboard
+    servicePort: 443
+    serviceTargetPort: 8443
+    serviceProtocol: TCP
+    servicePath: /
+    serviceSelector: 'k8s-app: kubernetes-dashboard'
+
+  - route: "{{ cluster.domainAPI }}.apps.{{ cluster.domain }}"
+    namespace: kube-system
+    name: kubernetes-api
+    serviceName: kubernetes-api
+    servicePort: 6443
+    serviceTargetPort: 6443
+    serviceProtocol: TCP
+    servicePath: /
+    serviceSelector: 'component: kube-apiserver'

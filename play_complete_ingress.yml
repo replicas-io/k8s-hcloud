@@ -1,0 +1,17 @@
+- name: Prepare local environment
+  import_playbook: play_local_env.yml
+
+- name: Create public IPs for MetalLB
+  import_playbook: play_floating_ip.yml
+
+- name: Deploy MetalLB
+  import_playbook: play_metallb.yml
+
+- name: Deploy nginx ingress
+  import_playbook: play_nginx_ingress.yml
+
+- name: Deploy cert-manager
+  import_playbook: play_cert_manager.yml
+
+- name: Create ingress routes
+  import_playbook: play_routes.yml

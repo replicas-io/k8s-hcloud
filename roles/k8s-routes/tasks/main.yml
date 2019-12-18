@@ -1,0 +1,12 @@
+---
+- name: Create services
+  shell: "echo '{{ lookup('template', 'templates/service.yml.j2') }}' | {{ kubectl }} -n {{ item.namespace }} create -f -"
+  loop: {{ routes }}
+  register: serviceOutput
+  failed_when:
+    - serviceOutput.rc == 1
+    - not serviceOutput.stdout is search("already exists")
+
+- name: Create ingress routes
+  shell: "echo '{{ lookup('template', 'templates/ingress.yml.j2') }}' | {{ kubectl }} -n {{ item.namespace }} apply -f -"
+  loop: {{ routes }}
