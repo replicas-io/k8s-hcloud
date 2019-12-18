@@ -2,6 +2,8 @@
 - hosts: ceph
   gather_facts: true
   become: true
+  vars:
+    - diskWipe: true
   roles:
     - node-wipefs
 

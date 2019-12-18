@@ -1,6 +1,10 @@
 ---
-namespace: rook-ceph
+namespace: rook-ceph-system
 operatorName: rook-ceph-operator
 operatorChannel: beta
 cephClusterName: ceph
 cephClusterImage: 'ceph/ceph:v14.2.4-20190917'
+
+
+# catalog source is unhealth
+# check olm
