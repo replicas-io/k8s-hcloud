@@ -2,12 +2,33 @@
 - name: Apply CRDs
   shell: "{{ kubectl }} apply -f {{ olmDownloadLink }}/crds.yaml"
 
+- name: Wait for deployments to be ready
+  shell: "{{ kubectl }} -n {{ olmNamespace }} rollout status -w deployment/olm-operator"
+  register: output
+  retries: 50
+  delay: 2
+  until: output.rc == 0
+
 - name: Apply OLM
   shell: "{{ kubectl }} apply -f {{ olmDownloadLink }}/olm.yaml"
+
+- name: Wait for deployments to be ready
+  shell: "{{ kubectl }} -n {{ olmNamespace }} rollout status -w deployment/catalog-operator"
+  register: output
+  retries: 50
+  delay: 2
+  until: output.rc == 0
 
 - name: Wait for deployments to succeed
   shell: "{{ kubectl }} get csv -n {{ olmNamespace }} packageserver -o jsonpath='{.status.phase}'"
   register: rolloutPhase
-  until: "{{ rolloutPhase.stdout }} == 'Succeeded'"
+  until: rolloutPhase.stdout == "Succeeded"
   retries: 50
   delay: 1
+
+- name: Wait for deployments to be ready
+  shell: "{{ kubectl }} -n {{ olmNamespace }} rollout status -w deployment/packageserver"
+  register: output
+  retries: 50
+  delay: 2
+  until: output.rc == 0
