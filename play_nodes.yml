@@ -55,17 +55,9 @@
   vars_files:
     - vars/vault_cloudflare_token.yml
     - vars/inventory.yml
-  tasks:
-    - name: Create A record
-      cloudflare_dns:
-        zone: "{{ cluster.domain }}"
-        record: "{{ inventory_hostname }}"
-        type: A
-        value: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-        ttl: 120
-        priority: 10
-        account_email: "{{ vaultCloudflareEmail }}"
-        account_api_token: "{{ vaultCloudflareToken }}"
+  roles:
+    - cloudflare-dns
+
 
 - name: Configure SSH hardening
   hosts: new_servers

@@ -2,6 +2,8 @@ hcloudToken: "{{ vaultHcloudToken }}"
 adminEmail: rhh.klussmann@gmail.com
 cluster:
   domain: replicas.io
+  domainAPI: api
+  domainDashboard: console
   location: hel1
   network: k8s
   hcloudProject: replicas.io

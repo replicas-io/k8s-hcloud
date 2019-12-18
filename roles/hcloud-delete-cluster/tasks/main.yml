@@ -17,7 +17,7 @@
   until: result.rc == 0
   when: storageDisks | int > 0
 
-- name: Delete A record
+- name: Delete A record for node
   cloudflare_dns:
     zone: "{{ cluster.domain }}"
     record: "{{ hostvars[item].ansible_host }}"

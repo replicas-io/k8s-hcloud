@@ -1,0 +1,13 @@
+---
+- name: Create A record for node
+  cloudflare_dns:
+    zone: "{{ cluster.domain }}"
+    record: "{{ inventory_hostname }}"
+    type: A
+    value: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    ttl: 120
+    priority: 10
+    state: present
+    solo: true
+    account_email: "{{ vaultCloudflareEmail }}"
+    account_api_token: "{{ vaultCloudflareToken }}"
