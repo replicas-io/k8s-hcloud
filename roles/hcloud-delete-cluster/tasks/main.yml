@@ -27,6 +27,24 @@
     state: absent
   loop: "{{ groups['all'] }}"
 
+- name: Set the label selector for detecting floating IPs to delete
+  set_fact:
+    label:
+      owner: "{{ cluster.domain }}-LB-IP"
+
+- name: Get all floating IPs that match the label
+  hcloud_floating_ip_info:
+    api_token: "{{ vaultHcloudToken }}"
+    label_selector: "{{ label }}"
+  register: floatingIPs
+
+- name: Delete floating IPs
+  hcloud_floating_ip:
+    api_token: "{{ vaultHcloudToken }}"
+    id: "{{ item.id }}"
+    state: absent
+  loop: "{{ floatingIPs.hcloud_floating_ip_info }}"
+
 - name: Delete the network
   hcloud_network:
     api_token: "{{ hcloudToken }}"

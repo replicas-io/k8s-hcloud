@@ -6,6 +6,7 @@
 
 - name: Create the given amount of floating IP addresses
   hcloud_floating_ip:
+    api_token: "{{ vaultHcloudToken }}"
     name: "{{ cluster.domain }}-LB-IP-{{ lookup('pipe', 'openssl rand -hex 3') }}"
     server: "master{{ query('sequence', 'start=1 end='+servers.master.replicas|string) | random}}.nodes.{{ cluster.domain }}"
     labels: "{{ label }}"
