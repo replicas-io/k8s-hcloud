@@ -1,0 +1,7 @@
+---
+# oidcIssuerURL: https://{{ keycloakClusterName }}.apps.k8s.{{ cluster.domain }}/auth/realms/{{ keycloakRealms[0] }}
+# oidcClientID: kubernetes
+# oidcOptions:
+#   - --oidc-issuer-url={{ oidcIssuerURL }}
+#   - --oidc-client-id={{ oidcClientID }}
+#   - --oidc-groups-claim=groups

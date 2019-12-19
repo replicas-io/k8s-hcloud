@@ -1,0 +1,9 @@
+---
+- name: Append oidc command line options to kube-apiserver
+  lineinfile:
+    path: "{{ kubeAPIServerManifest }}"
+    insertafter: '^(.*- )kube-apiserver$'
+    line: "\\1{{ item }}"
+    state: present
+  loop: "{{ oidcOptions }}"
+  # spaces:4
