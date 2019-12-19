@@ -12,7 +12,7 @@
 - name: Create the default DNS entry for nginx ingress routes
   cloudflare_dns:
     zone: "{{ cluster.domain }}"
-    record: "*.apps.k8s.{{ cluster.domain }}"
+    record: "*.apps.{{ cluster.name }}.{{ cluster.domain }}"
     type: A
     value: "{{ nginxPIP.stdout }}"
     ttl: 120

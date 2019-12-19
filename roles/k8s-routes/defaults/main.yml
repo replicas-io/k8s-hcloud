@@ -1,6 +1,6 @@
 ---
 routes:
-  - route: "{{ cluster.domainDashboard }}.apps.{{ cluster.domain }}"
+  - route: "{{ cluster.domainDashboard }}.apps.{{ cluster.name }}.{{ cluster.domain }}"
     namespace: kube-system
     name: kubernetes-dashboard
     serviceName: kubernetes-dashboard
@@ -10,7 +10,7 @@ routes:
     servicePath: /
     serviceSelector: 'k8s-app: kubernetes-dashboard'
 
-  - route: "{{ cluster.domainAPI }}.apps.{{ cluster.domain }}"
+  - route: "{{ cluster.domainAPI }}.apps.{{ cluster.name }}.{{ cluster.domain }}"
     namespace: kube-system
     name: kubernetes-api
     serviceName: kubernetes-api
