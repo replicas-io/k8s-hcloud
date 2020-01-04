@@ -56,3 +56,12 @@ if grep -q failed=[^0] "$log"; then
   exit 1
   echo "Execution of playbook failed."
 fi
+
+# Fetch and test the kubeconfig
+cd $CURRENT_DIRECTORY
+ansible-playbook -i $CLUSTER_DIRECTORY/inventory.ini play_fetch_config.yml
+echo "##########"
+echo "The kube config is available at $CLUSTER_DIRECTORY/.kube/config."
+echo "The following alias will set your shell up for cluster usage: "
+echo "alias k8s='kubectl --kubeconfig $CLUSTER_DIRECTORY/.kube/config'"
+echo "Cluster provisioning is now done."
