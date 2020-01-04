@@ -5,7 +5,7 @@
 - name: Wait for operator to come up
   shell: "{{ kubectl }} get pods -n {{ namespace }}"
   register: output
-  retries: 50
+  retries: 240
   delay: 2
   until: output.stdout is search("Running")
 

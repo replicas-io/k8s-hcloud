@@ -20,7 +20,8 @@ spec:
     workers: 0
   storage:
     useAllNodes: false
-    useAllDevices: true
+    useAllDevices: false
+    deviceFilter: {{ cephClusterDeviceFilter }}
     nodes:
 {% for node in storageNodes %}
       - name: "{{ node }}"

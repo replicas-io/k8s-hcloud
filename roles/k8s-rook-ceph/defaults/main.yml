@@ -5,6 +5,4 @@ operatorChannel: beta
 cephClusterName: ceph
 cephClusterImage: 'ceph/ceph:v14.2.4-20190917'
 
-
-# catalog source is unhealth
-# check olm
+cephClusterDeviceFilter: '^sd[b-z]'
