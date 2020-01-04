@@ -5,7 +5,7 @@ cluster:
   domain: replicas.io
   domainAPI: api
   domainDashboard: console
-  location: hel1
+  location: nbg1
   network: k8s
   hcloudProject: replicas.io
   hcloudSSHKey: k8s-setup-replicas
@@ -14,7 +14,7 @@ cluster:
   labels:
     project: replicas.io
     stage: prod
-    location: helsinki
+    location: nbg1
 
 networks:
   - name: k8s
