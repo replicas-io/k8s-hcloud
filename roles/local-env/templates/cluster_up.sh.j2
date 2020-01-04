@@ -1,0 +1,58 @@
+#!/bin/bash
+
+CURRENT_DIRECTORY="{{ playbook_dir }}"
+CLUSTER_DIRECTORY="$CURRENT_DIRECTORY/replicas-cluster-{{ cluster.domain }}"
+LOG=/tmp/$(date +"%s")
+
+cat << "EOF"
+
+########  ######## ########  ##       ####  ######     ###     ######      ####  #######
+##     ## ##       ##     ## ##        ##  ##    ##   ## ##   ##    ##      ##  ##     ##
+##     ## ##       ##     ## ##        ##  ##        ##   ##  ##            ##  ##     ##
+########  ######   ########  ##        ##  ##       ##     ##  ######       ##  ##     ##
+##   ##   ##       ##        ##        ##  ##       #########       ##      ##  ##     ##
+##    ##  ##       ##        ##        ##  ##    ## ##     ## ##    ## ###  ##  ##     ##
+##     ## ######## ##        ######## ####  ######  ##     ##  ######  ### ####  #######
+
+EOF
+
+echo "##########"
+sleep 1
+echo "Adding the cluster SSH key. Please provide the passphrase:"
+eval `ssh-agent`
+ssh-add {{ cluster.sshKeyFile }}
+
+echo "Starting cluster setup from scratch."
+sleep 1
+echo "STEP 1 - Deploying all infrastructure."
+sleep 3
+ansible-playbook $CURRENT_DIRECTORY/play_complete_cluster.yml --ask-vault-pass | tee $LOG
+if grep -q failed=[^0] "$log"; then
+  exit 1
+  echo "Execution of playbook failed."
+fi
+
+echo "##########"
+sleep 1
+echo "STEP 2 - Start kubespray playbook."
+sleep 3
+# Create a local working directory
+mkdir "$CLUSTER_DIRECTORY/kubespray-run"
+
+# Clone the kubespray repo
+git clone https://github.com/kubernetes-sigs/kubespray "$CLUSTER_DIRECTORY/kubespray-run"
+
+# Copy the inventory
+mkdir $CLUSTER_DIRECTORY/kubespray-run/inventory/mycluster
+cp $CLUSTER_DIRECTORY/inventory.ini $CLUSTER_DIRECTORY/kubespray-run/inventory/mycluster
+
+# Copy the group_vars
+cp -r $CLUSTER_DIRECTORY/group_vars $CLUSTER_DIRECTORY/kubespray-run/inventory/mycluster/
+
+# Start the playbook
+cd "$CLUSTER_DIRECTORY/kubespray-run"
+ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml | tee $LOG
+if grep -q failed=[^0] "$log"; then
+  exit 1
+  echo "Execution of playbook failed."
+fi

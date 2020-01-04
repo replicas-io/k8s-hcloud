@@ -32,6 +32,12 @@
     src: "{{ playbook_dir }}/templates/deployments.yml.j2"
     dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
 
+- name: Render the cluster up script
+  template:
+    src: "templates/cluster_up.sh.j2"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/cluster_up.sh"
+    mode: 0750
+
 - name: Create a ansible config file
   blockinfile:
     path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/ansible.cfg"
