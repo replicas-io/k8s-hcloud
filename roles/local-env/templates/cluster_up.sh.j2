@@ -18,6 +18,10 @@ EOF
 
 echo "##########"
 sleep 1
+echo "Adding the cluster SSH key. Please provide the passphrase:"
+eval `ssh-agent`
+ssh-add {{ cluster.sshKeyFile }}
+
 echo "Starting cluster setup from scratch."
 sleep 1
 echo "STEP 1 - Deploying all infrastructure."
