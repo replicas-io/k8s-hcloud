@@ -160,7 +160,7 @@ container_manager: docker
 
 ## Settings for containerized control plane (etcd/kubelet/secrets)
 etcd_deployment_type: docker
-kubelet_deployment_type: host
+kubelet_deployment_type: docker
 helm_deployment_type: host
 
 # Enable kubeadm experimental control plane
@@ -171,7 +171,7 @@ kubeadm_certificate_key: "{{ lookup('password', credentials_dir + '/kubeadm_cert
 k8s_image_pull_policy: IfNotPresent
 
 # audit log for kubernetes
-kubernetes_audit: false
+kubernetes_audit: true
 
 # dynamic kubelet configuration
 dynamic_kubelet_configuration: false

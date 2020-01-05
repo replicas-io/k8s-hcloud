@@ -35,7 +35,7 @@ metallbAddressCount: 2
 servers:
   master:
     replicas: 3
-    size: cx41
+    size: cx31
     backup: 'false'
     image: centos-7
   worker:
@@ -52,4 +52,4 @@ storageNodes:
   - master2
 
 storageDisks: 1 # per node
-storageDiskSizeGB: 50 # per disk
+storageDiskSizeGB: 10 # per disk

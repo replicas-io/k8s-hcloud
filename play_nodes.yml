@@ -65,7 +65,7 @@
   become: true
   vars_files:
     - vars/inventory.yml
-    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{ cluster.domain }}/deployments.yml"
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
   roles:
     - siw36.ansible_ssh_hardening
 

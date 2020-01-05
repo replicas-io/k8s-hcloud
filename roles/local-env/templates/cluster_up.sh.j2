@@ -1,8 +1,9 @@
 #!/bin/bash
 
+set -e
+
 CURRENT_DIRECTORY="{{ playbook_dir }}"
 CLUSTER_DIRECTORY="$CURRENT_DIRECTORY/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}"
-LOG=/tmp/$(date +"%s")
 
 cat << "EOF"
 
@@ -26,11 +27,7 @@ echo "Starting cluster setup from scratch."
 sleep 1
 echo "STEP 1 - Deploying all infrastructure."
 sleep 3
-ansible-playbook $CURRENT_DIRECTORY/play_complete_cluster.yml --ask-vault-pass | tee $LOG
-if grep -q failed=[^0] "$log"; then
-  exit 1
-  echo "Execution of playbook failed."
-fi
+ansible-playbook $CURRENT_DIRECTORY/play_complete_cluster.yml --ask-vault-pass
 
 echo "##########"
 sleep 1
@@ -51,11 +48,7 @@ cp -r $CLUSTER_DIRECTORY/group_vars $CLUSTER_DIRECTORY/kubespray-run/inventory/m
 
 # Start the playbook
 cd "$CLUSTER_DIRECTORY/kubespray-run"
-ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml | tee $LOG
-if grep -q failed=[^0] "$log"; then
-  exit 1
-  echo "Execution of playbook failed."
-fi
+ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml
 
 # Fetch and test the kubeconfig
 cd $CURRENT_DIRECTORY
