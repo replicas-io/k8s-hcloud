@@ -1,7 +1,7 @@
 sshPort: {{ cluster.sshPort }}
 deployments:
 {% for i in range(0, servers.master.replicas, 1) %}
-  - name: "master{{ i }}.nodes.{{ cluster.domain }}"
+  - name: "master{{ i }}.nodes.{{ cluster.name }}.{{ cluster.domain }}"
     state: present # (present|started|stopped|restarted|absent|rebuild)
     size: {{ servers.master.size }}
     location: "{{ cluster.location }}"
@@ -12,7 +12,7 @@ deployments:
     labels: "{{ cluster.labels }}"
 {% endfor %}
 {% for i in range(0, servers.worker.replicas, 1) %}
-  - name: "worker{{ i }}.nodes.{{ cluster.domain }}"
+  - name: "worker{{ i }}.nodes.{{ cluster.name }}.{{ cluster.domain }}"
     state: present # (present|started|stopped|restarted|absent|rebuild)
     size: {{ servers.worker.size }}
     location: "{{ cluster.location }}"
@@ -27,8 +27,8 @@ networks:
   - name: "{{ cluster.network }}"
     servers:
 {% for i in range(0, servers.master.replicas, 1) %}
-      - "master{{ i }}.nodes.{{ cluster.domain }}"
+      - "master{{ i }}.nodes.{{ cluster.name }}.{{ cluster.domain }}"
 {% endfor %}
 {% for i in range(0, servers.worker.replicas, 1) %}
-      - "worker{{ i }}.nodes.{{ cluster.domain }}"
+      - "worker{{ i }}.nodes.{{ cluster.name }}.{{ cluster.domain }}"
 {% endfor %}

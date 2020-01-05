@@ -7,7 +7,7 @@
   vars_files:
     - vars/inventory.yml
     - vars/vault_hcloud_token.yml
-    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
   pre_tasks:
     - name: Get the SSH public key
       shell: "cat {{ cluster.sshKeyFile }}.pub"
@@ -33,7 +33,7 @@
   vars_files:
     - vars/inventory.yml
     - vars/vault_hcloud_token.yml
-    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
   vars:
     hcloudToken: "{{ vaultHcloudToken }}"
   roles:
@@ -65,7 +65,7 @@
   become: true
   vars_files:
     - vars/inventory.yml
-    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{ cluster.domain }}/deployments.yml"
   roles:
     - siw36.ansible_ssh_hardening
 
@@ -75,7 +75,7 @@
   become: true
   vars_files:
     - vars/inventory.yml
-    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
   roles:
     - node-prepare
 
@@ -88,7 +88,7 @@
   tasks:
     - name: Add the master host to the inventory
       lineinfile:
-        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
+        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/inventory.ini.j2"
         insertafter: '^\[all\]'
         line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }} etcd_member_name={{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }}"
       delegate_to: localhost
@@ -96,7 +96,7 @@
 
     - name: Add the worker host to the inventory
       lineinfile:
-        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
+        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/inventory.ini.j2"
         insertafter: '^\[all\]'
         line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }}"
       delegate_to: localhost
@@ -110,10 +110,10 @@
   tasks:
     - name: Render the template
       template:
-        src: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
-        dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini"
+        src: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/inventory.ini.j2"
+        dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/inventory.ini"
 
     - name: Delete the copied template file
       file:
-        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
+        path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/inventory.ini.j2"
         state: absent

@@ -8,6 +8,6 @@
     - vars/inventory.yml
     - vars/vault_hcloud_token.yml
     - vars/vault_cloudflare_token.yml
-    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
   roles:
     - hcloud-delete-cluster
