@@ -2,13 +2,13 @@
 - name: Fetch the kubeadmin kubeconfig from one of the master nodes
   fetch:
     src: "{{ configPath }}"
-    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/.kube/"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/.kube/"
     flat: true
   run_once: true
 
 - name: Replace the private API endpoint with the public one
   replace:
-    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/.kube/config"
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/.kube/config"
     regexp: '^(.*server: )(.*)$'
     replace: "\\1 https://master0.nodes.{{ cluster.domain }}:6443"
   become: false

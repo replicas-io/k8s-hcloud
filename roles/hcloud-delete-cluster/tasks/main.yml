@@ -53,5 +53,5 @@
 
 - name: Delete local cluster directory
   file:
-    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}"
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}"
     state: absent

@@ -10,7 +10,7 @@
 
 - name: Create the local working directory
   file:
-    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}"
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}"
     state: directory
 
 - name: Gather remote roles
@@ -19,28 +19,28 @@
 - name: Copy the kubespray configuration files to the working directory
   copy:
     src: "{{ playbook_dir }}/kubespray-configs/"
-    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}"
   delegate_to: localhost
 
 - name: Copy the kubespray inventory file to the working directory
   copy:
     src: "templates/{{ inventory_file }}"
-    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/inventory.ini.j2"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/inventory.ini.j2"
 
 - name: Render the deployments template
   template:
     src: "{{ playbook_dir }}/templates/deployments.yml.j2"
-    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/deployments.yml"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
 
 - name: Render the cluster up script
   template:
     src: "templates/cluster_up.sh.j2"
-    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/cluster_up.sh"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/cluster_up.sh"
     mode: 0750
 
 - name: Create a ansible config file
   blockinfile:
-    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/ansible.cfg"
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/ansible.cfg"
     block: |
       [defaults]
       host_key_checking = False
@@ -50,5 +50,5 @@
 - name: Copy the start script to the working directory
   copy:
     src: "{{ playbook_dir }}/kubespray.sh"
-    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.domain }}/kubespray.sh"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/kubespray.sh"
     mode: 0770

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CURRENT_DIRECTORY="{{ playbook_dir }}"
-CLUSTER_DIRECTORY="$CURRENT_DIRECTORY/replicas-cluster-{{ cluster.domain }}"
+CLUSTER_DIRECTORY="$CURRENT_DIRECTORY/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}"
 LOG=/tmp/$(date +"%s")
 
 cat << "EOF"
