@@ -1,0 +1,5 @@
+---
+# Get those values dynamically by creating the client beforehand
+# Or fetch them if the client is already present
+# gatekeeperClientID: xxxxx
+# gatekeeperClientSecret: xxxxx

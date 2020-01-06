@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: proxyinjector
+    version: v0.0.23
+    group: com.stakater.platform
+    provider: stakater
+    chart: "proxyinjector-v0.0.23"
+    release: "proxyinjector"
+    heritage: "Tiller"
+  name: proxyinjector
+data:
+  config.yml: |-
+    proxyconfig:
+      client-id: "{{ gatekeeperClientID }}"
+      client-secret: "{{ gatekeeperClientSecret }}"
+      gatekeeper-image : "{{ gatekeeperImage }}"
+      enable-default-deny: true
+      secure-cookie: false
+      verbose: true
+      enable-logging: true
+      cors-origins:
+      - '*'
+      cors-methods:
+      - GET
+      - POST
+      resources:
+      - uri: '/*'
+      scopes:
+      - 'good-service'

@@ -1,4 +1,7 @@
 ---
+# This may be obsolete because the API server runs containerized?
+# -> Which would ment that the deployment should get patched
+
 - name: Append oidc command line options to kube-apiserver
   lineinfile:
     path: "{{ kubeAPIServerManifest }}"

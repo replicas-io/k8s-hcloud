@@ -1,0 +1,4 @@
+---
+injectorManifest: https://raw.githubusercontent.com/stakater/ProxyInjector/master/deployments/kubernetes/proxyinjector.yaml
+injectorNamespace: keycloak
+gatekeeperImage: keycloak/keycloak-gatekeeper:6.0.1

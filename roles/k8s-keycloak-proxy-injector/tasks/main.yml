@@ -1,0 +1,6 @@
+---
+- name: Apply the proxyinjector manifest
+  shell: "{{ kubectl }} -n {{ injectorNamespace }} apply -f {{ injectorManifest }}"
+
+- name: Render and apply the proxyinjector config
+  shell: "echo '{{ lookup('template', 'templates/proxyinjector.yml.j2') }}' | {{ kubectl }} -n {{ injectorNamespace }} apply -f -"
