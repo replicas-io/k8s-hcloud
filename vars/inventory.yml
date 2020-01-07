@@ -1,5 +1,6 @@
 hcloudToken: "{{ vaultHcloudToken }}"
 adminEmail: rhh.klussmann@gmail.com
+kubesprayVersion: v2.12.0
 cluster:
   name: k8s
   domain: replicas.io
@@ -23,10 +24,6 @@ networks:
     subnets:
       - name: nodes
         range: 10.18.1.0/24
-        zone: eu-central
-        type: server
-      - name: other
-        range: 10.18.2.0/24
         zone: eu-central
         type: server
 

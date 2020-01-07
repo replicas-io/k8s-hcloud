@@ -7,9 +7,6 @@ if [ ! $(pwd | grep "replicas-cluster") ]; then
   exit 1
 fi
 
-# Create a local working directory
-mkdir ./kubespray-run
-
 # Clone the kubespray repo
 git clone https://github.com/kubernetes-sigs/kubespray ./kubespray-run
 

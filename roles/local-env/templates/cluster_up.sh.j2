@@ -33,11 +33,6 @@ echo "##########"
 sleep 1
 echo "STEP 2 - Start kubespray playbook."
 sleep 3
-# Create a local working directory
-mkdir "$CLUSTER_DIRECTORY/kubespray-run"
-
-# Clone the kubespray repo
-git clone https://github.com/kubernetes-sigs/kubespray "$CLUSTER_DIRECTORY/kubespray-run"
 
 # Copy the inventory
 mkdir $CLUSTER_DIRECTORY/kubespray-run/inventory/mycluster

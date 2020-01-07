@@ -49,6 +49,18 @@
 
 - name: Copy the start script to the working directory
   copy:
-    src: "{{ playbook_dir }}/kubespray.sh"
+    src: "files/kubespray.sh"
     dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/kubespray.sh"
     mode: 0770
+
+- name: Create the kubespray directory
+  file:
+    path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/kubespray-run"
+    state: directory
+
+- name: Download kubespray
+  unarchive:
+    src: "https://github.com/kubernetes-sigs/kubespray/archive/{{ kubesprayVersion }}.tar.gz"
+    dest: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/kubespray-run"
+    remote_src: yes
+    extra_opts: --strip-components=1
