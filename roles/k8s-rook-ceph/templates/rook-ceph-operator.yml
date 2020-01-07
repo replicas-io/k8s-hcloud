@@ -12,7 +12,7 @@ metadata:
   namespace: "{{ namespace }}"
 spec:
   targetNamespaces:
-  - "{{ namespace }}"
+    - "{{ namespace }}"
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription

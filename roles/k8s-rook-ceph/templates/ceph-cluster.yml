@@ -26,22 +26,23 @@ spec:
 {% for node in storageNodes %}
       - name: "{{ node }}"
 {% endfor %}
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: kubernetes.io/hostname
-            operator: In
-            values:
+  placement:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
 {% for node in storageNodes %}
-            - "{{ node }}"
+              - "{{ node }}"
 {% endfor %}
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: "rook.io/cluster"
-            operator: In
-            values:
-            - "*"
-        topologyKey: "kubernetes.io/hostname"
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: "rook.io/cluster"
+              operator: In
+              values:
+              - "*"
+          topologyKey: "kubernetes.io/hostname"
