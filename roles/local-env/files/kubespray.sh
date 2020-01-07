@@ -7,9 +7,6 @@ if [ ! $(pwd | grep "replicas-cluster") ]; then
   exit 1
 fi
 
-# Clone the kubespray repo
-git clone https://github.com/kubernetes-sigs/kubespray ./kubespray-run
-
 # Copy the inventory
 mkdir ./kubespray-run/inventory/mycluster
 cp ./inventory.ini ./kubespray-run/inventory/mycluster
@@ -19,4 +16,4 @@ cp -r ./group_vars ./kubespray-run/inventory/mycluster/
 
 # Start the playbook
 cd ./kubespray-run
-#ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml
+ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root cluster.yml

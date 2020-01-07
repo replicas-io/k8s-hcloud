@@ -10,6 +10,6 @@
   replace:
     path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/.kube/config"
     regexp: '^(.*server: )(.*)$'
-    replace: "\\1 https://master0.nodes.{{ cluster.domain }}:6443"
+    replace: "\\1 https://master0.nodes.{{ cluster.name }}.{{ cluster.domain }}:6443"
   become: false
   delegate_to: localhost
