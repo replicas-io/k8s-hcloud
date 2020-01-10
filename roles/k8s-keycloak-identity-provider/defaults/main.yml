@@ -1,0 +1,6 @@
+---
+staticPodManifest: /etc/kubernetes/manifests/kube-apiserver.yaml
+
+oidcIssuerUrl: "https://keycloak.{{ cluster.name }}.{{ cluster.domain }}/auth/realms/{{ keycloakRealmName }}"
+oidcClientId: kubernetes
+oidcGroupsClaim: groups

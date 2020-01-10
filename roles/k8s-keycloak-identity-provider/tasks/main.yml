@@ -1,0 +1,28 @@
+---
+- debug:
+    msg: "Run this role in serial on all masters to avoid downtime!"
+
+- name: Append openid-connect flags to kube apiserver manifest
+  lineinfile:
+    path: "{{ staticPodManifest }}"
+    line: "{{ item }}"
+    insertafter: '^.*\- kube-apiserver$'
+  loop:
+    - "    - --oidc-issuer-url={{ oidcIssuerUrl }}"
+    - "    - --oidc-client-id={{ oidcClientId }}"
+    - "    - --oidc-groups-claim={{ oidcGroupsClaim }}"
+
+- name: Register apiserver container names
+  shell: docker ps | grep apiserver | awk '{print $1}'
+  register: containers
+
+- name: Restart kube apiserver pods
+  docker_container:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ containers.stdout_lines }}"
+
+- name: Restart kubelet service
+  systemd:
+    name: kubelet
+    state: restarted
