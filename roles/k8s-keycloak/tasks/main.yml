@@ -2,8 +2,12 @@
 - name: Create the keycloak operator
   shell: "echo '{{ lookup('template', 'templates/keycloak-operator.yml') }}' | {{ kubectl }} apply -f -"
 
-- name: Wait for the operator to be ready
-  shell: "{{ kubectl }} #do stuff here"
+- name: Wait for operator to be ready
+  shell: "{{ kubectl }} -n {{ olmNamespace }} rollout status -w deployment/keycloak-operator"
+  register: output
+  retries: 50
+  delay: 2
+  until: output.rc == 0
 
 - name: Create the keycloak cluster
   shell: "echo '{{ lookup('template', 'templates/keycloak-cluster.yml') }}' | {{ kubectl }} apply -f -"

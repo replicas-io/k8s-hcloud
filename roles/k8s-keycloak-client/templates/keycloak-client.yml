@@ -2,7 +2,7 @@
 apiVersion: keycloak.org/v1alpha1
 kind: KeycloakClient
 metadata:
-  name: "{{ keycloakClusterName }}-user-{{ item }}"
+  name: "{{ keycloakClusterName }}-client-{{ item }}"
   labels:
     keycloak-cluster: "{{ keycloakClusterName }}"
 spec:
