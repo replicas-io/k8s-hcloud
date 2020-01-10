@@ -7,6 +7,7 @@
   loop:
     - netaddr
     - dnspython
+    - openshift
 
 - name: Create the local working directory
   file:

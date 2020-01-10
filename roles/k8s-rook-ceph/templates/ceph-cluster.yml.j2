@@ -7,15 +7,15 @@ metadata:
 spec:
   cephVersion:
     image: "{{ cephClusterImage }}"
-  dataDirHostPath: /var/lib/rook
+  dataDirHostPath: "{{ rookHostDir }}"
   mon:
-    count: 3
+    count: 1
     allowMultiplePerNode: false
   dashboard:
     enabled: true
     ssl: true
   network:
-    hostNetwork: false
+    hostNetwork: false # check SDN for errors when mon pods are not starting
   rbdMirroring:
     workers: 0
   storage:
@@ -25,10 +25,12 @@ spec:
     nodes:
 {% for node in storageNodes %}
       - name: "{{ node }}"
+        deviceFilter: {{ cephClusterDeviceFilter }}
 {% endfor %}
   placement:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
+    all:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
             - key: kubernetes.io/hostname
@@ -37,12 +39,12 @@ spec:
 {% for node in storageNodes %}
               - "{{ node }}"
 {% endfor %}
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-            - key: "rook.io/cluster"
-              operator: In
-              values:
-              - "*"
-          topologyKey: "kubernetes.io/hostname"
+    # podAntiAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     - labelSelector:
+    #         matchExpressions:
+    #         - key: "rook.io/cluster"
+    #           operator: In
+    #           values:
+    #           - "*"
+    #       topologyKey: "kubernetes.io/hostname"

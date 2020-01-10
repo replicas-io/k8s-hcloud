@@ -1,8 +1,25 @@
 ---
-namespace: rook-ceph-system
+namespace: rook-ceph
 operatorName: rook-ceph-operator
 operatorChannel: beta
 cephClusterName: ceph
-cephClusterImage: 'ceph/ceph:v14.2.5'
+cephClusterImage: 'ceph/ceph:v14.2.4-20190917'
+rookHostDir: /var/lib/rook
 
 cephClusterDeviceFilter: '^sd[b-z]'
+
+reservedNames:
+  - rook-ceph-cmd-reporter
+  - rook-ceph-mgr
+  - rook-ceph-osd
+  - rook-ceph-system
+  - rook-csi-cephfs-plugin-sa
+  - rook-csi-cephfs-provisioner-sa
+  - rook-csi-rbd-plugin-sa
+  - rook-csi-rbd-provisioner-sa
+
+disks:
+  - /dev/sdb
+  
+packages:
+  - lvm2

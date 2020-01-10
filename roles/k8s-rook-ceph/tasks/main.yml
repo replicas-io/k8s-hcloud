@@ -1,6 +1,26 @@
 ---
-- name: Create the rook ceph operator
-  shell: "echo '{{ lookup('template', 'templates/rook-ceph-operator.yml') }}' | {{ kubectl }} apply -f -"
+# - name: Ceph cluster namespace sanity check
+#   fail:
+#     msg:
+#       - "{{ item }} is a reserved name for one og the cluster service accounts."
+#       - "Please choose a different name for your ceph namesapce."
+#   when: namespace in reservedNames
+
+- name: Create custom resource definitions
+  #shell: "echo '{{ lookup('template', 'templates/rook-ceph-common.yml.j2') }}' | {{ kubectl }} apply -f -"
+  k8s:
+    kubeconfig: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/.kube/config"
+    state: present
+    definition: "{{ lookup('template', 'templates/rook-ceph-common.yml.j2') }}"
+    apply: true
+
+- name: Create the rook ceph operator from template
+  #shell: "echo '{{ lookup('template', 'templates/rook-ceph-operator.yml.j2') }}' | {{ kubectl }} apply -f -"
+  k8s:
+    kubeconfig: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/.kube/config"
+    state: present
+    definition: "{{ lookup('template', 'templates/rook-ceph-operator.yml.j2') }}"
+    apply: true
 
 - name: Wait for operator to come up
   shell: "{{ kubectl }} get pods -n {{ namespace }}"
@@ -10,4 +30,5 @@
   until: output.stdout is search("Running")
 
 - name: Create the ceph clutser
-  shell: "echo '{{ lookup('template', 'templates/ceph-cluster.yml') }}' | {{ kubectl }} apply -f -"
+  shell: "echo '{{ lookup('template', 'templates/ceph-cluster.yml.j2') }}' | {{ kubectl }} apply -f -"
+  #shell: "{{ kubectl }} apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/cluster.yaml"
