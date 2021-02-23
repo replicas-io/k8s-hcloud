@@ -1,14 +1,21 @@
-- name: Delete cluster node
-  hcloud_server:
-    api_token: "{{ vaultHcloudToken }}"
-    name: "{{ hostvars[item].ansible_host }}"
-    state: absent
-  loop: "{{ groups['all'] }}"
+---
+- name: Detach volumes
+  hcloud_volume:
+    api_token: "{{ hcloudToken }}"
+    name: "{{ item[0] }}.nodes.{{ cluster.name }}.{{ cluster.domain }}-vol{{ item[1] }}"
+    server: ""
+  loop: "{{ storageNodes | product(query('sequence', 'start=1 end='+storageDisks|string)) | list }}"
+  register: result
+  retries: 50
+  delay: 3
+  until: result is not failed
+  when: storageDisks | int > 0
 
 - name: Delete volumes
   hcloud_volume:
     api_token: "{{ hcloudToken }}"
     name: "{{ item[0] }}.nodes.{{ cluster.name }}.{{ cluster.domain }}-vol{{ item[1] }}"
+    server: ""
     state: absent
   loop: "{{ storageNodes | product(query('sequence', 'start=1 end='+storageDisks|string)) | list }}"
   register: result
@@ -16,6 +23,17 @@
   delay: 3
   until: result is not failed
   when: storageDisks | int > 0
+
+- name: Delete cluster node
+  hcloud_server:
+    api_token: "{{ vaultHcloudToken }}"
+    name: "{{ hostvars[item].ansible_host }}"
+    state: absent
+  loop: "{{ groups['all'] }}"
+  register: result
+  retries: 50
+  delay: 3
+  until: result is not failed
 
 - name: Delete A record for node
   cloudflare_dns:

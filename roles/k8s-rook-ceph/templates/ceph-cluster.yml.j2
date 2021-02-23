@@ -3,48 +3,38 @@ apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: "{{ cephClusterName }}"
-  namespace: "{{ namespace }}"
+  namespace: "{{ operatorNamespace }}"
 spec:
   cephVersion:
     image: "{{ cephClusterImage }}"
   dataDirHostPath: "{{ rookHostDir }}"
   mon:
-    count: 1
+    count: 3
     allowMultiplePerNode: false
   dashboard:
     enabled: true
-    ssl: true
+    ssl: false # because it will get proxied by a keycloak gatekeeper
+  monitoring:
+    enabled: true
+    rulesNamespace: "{{ operatorNamespace }}"
   network:
-    hostNetwork: false # check SDN for errors when mon pods are not starting
+    hostNetwork: false
+  crashCollector:
+    disable: true # crashcontroller cant run on nodes where mons are running, see: https://github.com/rook/rook/pull/4688/files
   rbdMirroring:
     workers: 0
   storage:
     useAllNodes: false
     useAllDevices: false
-    deviceFilter: {{ cephClusterDeviceFilter }}
+    config:
+      storeType: filestore
     nodes:
 {% for node in storageNodes %}
       - name: "{{ node }}"
-        deviceFilter: {{ cephClusterDeviceFilter }}
+        devices:
+{% for device in cephClusterDisks %}
+          - name: "{{ device }}"
 {% endfor %}
-  placement:
-    all:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-{% for node in storageNodes %}
-              - "{{ node }}"
 {% endfor %}
-    # podAntiAffinity:
-    #   requiredDuringSchedulingIgnoredDuringExecution:
-    #     - labelSelector:
-    #         matchExpressions:
-    #         - key: "rook.io/cluster"
-    #           operator: In
-    #           values:
-    #           - "*"
-    #       topologyKey: "kubernetes.io/hostname"
+  disruptionManagement:
+    managePodBudgets: true

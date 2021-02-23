@@ -34,12 +34,12 @@ servers:
     replicas: 3
     size: cx31
     backup: 'false'
-    image: centos-7
+    image: debian-10
   worker:
-    replicas: 0
-    size: cx41
+    replicas: 2
+    size: cx31
     backup: 'false'
-    image: centos-7
+    image: debian-10
 
 
 # Variables for deploying extra disks to nodes

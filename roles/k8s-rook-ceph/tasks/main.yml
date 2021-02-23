@@ -1,34 +1,31 @@
 ---
-# - name: Ceph cluster namespace sanity check
-#   fail:
-#     msg:
-#       - "{{ item }} is a reserved name for one og the cluster service accounts."
-#       - "Please choose a different name for your ceph namesapce."
-#   when: namespace in reservedNames
-
 - name: Create custom resource definitions
-  #shell: "echo '{{ lookup('template', 'templates/rook-ceph-common.yml.j2') }}' | {{ kubectl }} apply -f -"
-  k8s:
-    kubeconfig: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/.kube/config"
-    state: present
-    definition: "{{ lookup('template', 'templates/rook-ceph-common.yml.j2') }}"
-    apply: true
+  shell: "{{ kubectl }} apply -f {{ rookManifestLinks.common }}"
 
-- name: Create the rook ceph operator from template
-  #shell: "echo '{{ lookup('template', 'templates/rook-ceph-operator.yml.j2') }}' | {{ kubectl }} apply -f -"
-  k8s:
-    kubeconfig: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/.kube/config"
-    state: present
-    definition: "{{ lookup('template', 'templates/rook-ceph-operator.yml.j2') }}"
-    apply: true
+- name: Create the rook ceph operator
+  shell: "{{ kubectl }} apply -f {{ rookManifestLinks.operator }}"
+  when: not operatorOLM
+
+- name: Subscribe to the rook-ceph operator from operatorhub.io
+  shell: "echo '{{ lookup('template', 'templates/rook-ceph-operator-olm.yml.j2') }}' | {{ kubectl }} apply -f -"
+  when: operatorOLM
 
 - name: Wait for operator to come up
-  shell: "{{ kubectl }} get pods -n {{ namespace }}"
+  shell: "{{ kubectl }} -n rook-ceph get pod -l app=rook-ceph-operator -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}' | grep Ready=True" # Extend this check by looking specifically for the oprator pod
   register: output
   retries: 240
   delay: 2
-  until: output.stdout is search("Running")
+  until: output.rc == 0
 
 - name: Create the ceph clutser
   shell: "echo '{{ lookup('template', 'templates/ceph-cluster.yml.j2') }}' | {{ kubectl }} apply -f -"
-  #shell: "{{ kubectl }} apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/cluster.yaml"
+
+# - name: Wait for the ceph cluster to be healthy (This may take while)
+#   shell: "{{ kubectl }} -n rook-ceph get cephcluster {{ cephClusterName }} -o=jsonpath='{.status.clusterHealth}'" # This does not work yet, need to deploy a cluster to identify the right path to look for
+#   register: output
+#   retries: 1000
+#   delay: 2
+#   until: output.stdout is search("Running")
+
+- name: Create the ceph toolbox for cluster maintenance and debugging
+  shell: "{{ kubectl }} apply -f {{ rookManifestLinks.toolbox }}"

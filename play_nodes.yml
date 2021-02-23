@@ -59,25 +59,25 @@
     - cloudflare-dns
 
 
-- name: Configure SSH hardening
-  hosts: new_servers
-  gather_facts: true
-  become: true
-  vars_files:
-    - vars/inventory.yml
-    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
-  roles:
-    - siw36.ansible_ssh_hardening
+# - name: Configure SSH hardening
+#   hosts: new_servers
+#   gather_facts: true
+#   become: true
+#   vars_files:
+#     - vars/inventory.yml
+#     - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
+#   roles:
+#     - siw36.ansible_ssh_hardening
 
-- name: Disable firewall and SELinux
-  hosts: new_servers
-  gather_facts: true
-  become: true
-  vars_files:
-    - vars/inventory.yml
-    - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
-  roles:
-    - node-prepare
+# - name: Disable firewall and SELinux
+#   hosts: new_servers
+#   gather_facts: true
+#   become: true
+#   vars_files:
+#     - vars/inventory.yml
+#     - "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/deployments.yml"
+#   roles:
+#     - node-prepare
 
 - name: Prepare local inventory - add host details
   hosts: new_servers
@@ -90,7 +90,7 @@
       lineinfile:
         path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/inventory.ini.j2"
         insertafter: '^\[all\]'
-        line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }} etcd_member_name={{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }}"
+        line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_ens10.ipv4.address }} etcd_member_name={{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }}"
       delegate_to: localhost
       when: inventory_hostname is search("master")
 
@@ -98,7 +98,7 @@
       lineinfile:
         path: "{{ playbook_dir }}/replicas-cluster-{{ cluster.name }}.{{ cluster.domain }}/inventory.ini.j2"
         insertafter: '^\[all\]'
-        line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_eth1.ipv4.address }}"
+        line: "{{ inventory_hostname | regex_replace('^([^.]+)\\..*$', '\\1') }} ansible_host={{ inventory_hostname }} ansible_port={{ cluster.sshPort }} ansible_user=root ip={{ ansible_ens10.ipv4.address }}"
       delegate_to: localhost
       when: inventory_hostname is search("worker")
 

@@ -1,18 +1,23 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "{{ operatorNamespace }}"
+---
 apiVersion: operators.coreos.com/v1alpha2
 kind: OperatorGroup
 metadata:
   name: operatorgroup
-  namespace: "{{ namespace }}"
+  namespace: "{{ operatorNamespace }}"
 spec:
   targetNamespaces:
-    - "{{ namespace }}"
+    - "{{ operatorNamespace }}"
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: "{{ operatorName }}"
-  namespace: "{{ namespace }}"
+  namespace: "{{ operatorNamespace }}"
 spec:
   channel: "{{ operatorChannel }}"
   name: rook-ceph

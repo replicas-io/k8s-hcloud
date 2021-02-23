@@ -1,39 +1,73 @@
 ---
-- hosts: k8s-cluster
-  gather_facts: true
-  become: true
-  vars:
-    packages:
-      - lvm2
-  tasks:
-    - name: Install required packages
-      package:
-        name: "{{ item }}"
-        state: latest
-      loop: "{{ packages }}"
+# - name: Cluster package installation
+#   hosts: all
+#   gather_facts: true
+#   become: true
+#   vars_files:
+#     - vars/ceph.yml
+#   tasks:
+#     - name: Install requred packages on all cluster nodes
+#       package:
+#         name: "{{ item }}"
+#         state: latest
+#       loop: "{{ packages }}"
+#
+# - name: Delete old rook cluster resources
+#   hosts: ceph
+#   become: true
+#   gather_facts: true
+#   serial: 1
+#   vars_files:
+#     - vars/ceph.yml
+#   # pre_tasks:
+#   #   - pause:
+#   #       prompt:
+#   #         - "This playbook is for initial cluster setup in the NS rook-ceph."
+#   #         - "You will loose all data and configuration if there is already a cluster ruuning!"
+#   #     run_once: true
+#   tasks:
+#     - name: Delete the host directory that is going to be used by this cluster
+#       file:
+#         path: "{{ rookHostDir }}"
+#         state: absent
+#
+#     - name: Delete the ceph kubelet plugins
+#       file:
+#         path: "{{ item }}"
+#         state: absent
+#       loop:
+#         - /var/lib/kubelet/plugins_registry/rook-ceph-system.cephfs.csi.ceph.com-reg.sock
+#         - /var/lib/kubelet/plugins_registry/rook-ceph.rbd.csi.ceph.com-reg.sock
+#         - /var/lib/kubelet/plugins_registry/rook-ceph-system.rbd.csi.ceph.com-reg.sock
+#         - /var/lib/kubelet/plugins_registry/rook-ceph.cephfs.csi.ceph.com-reg.sock
+#         - /var/lib/kubelet/plugins/rook-ceph.cephfs.csi.ceph.com
+#         - /var/lib/kubelet/plugins/rook-ceph.rbd.csi.ceph.com
+#         - /var/lib/kubelet/plugins/rook-ceph-system.rbd.csi.ceph.com
+#         - /var/lib/kubelet/plugins/rook-ceph-system.cephfs.csi.ceph.com
+#
+#     - name: Unmount the storage disks
+#       shell: "umount {{ item }}"
+#       loop: "{{ cephClusterDisks }}"
+#       register: umountOut
+#       failed_when:
+#         - umountOut.rc != 0
+#         - umountOut.rc != 32
+#
+#     - name: Wipe the filesystem from the storage disks
+#       shell: "wipefs -fa {{ item }}"
+#       loop: "{{ cephClusterDisks }}"
 
-- hosts: ceph
-  gather_facts: true
-  become: true
-  vars:
-    - diskWipe: true
-    - rookHostDir: /var/lib/rook
-  roles:
-    - node-wipefs
-  tasks:
-    - name: Delete the host directory that is going to be used by this cluster
-      file:
-        path: "{{ rookHostDir }}"
-        state: absent
+#     - name: Reboot the node (this is somehow fixing some issues)
+#       reboot:
 
-- hosts: localhost
+- name: Rook Ceph cluster setup
+  hosts: localhost
   gather_facts: false
   become: false
   vars_files:
     - vars/inventory.yml
+    - vars/ceph.yml
   roles:
     - local-kubectl
-    #- k8s-olm
+    - k8s-olm
     - k8s-rook-ceph
-
-# Add everything to one role and use deletegate_to for specific targets
